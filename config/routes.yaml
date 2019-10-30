@@ -2,6 +2,10 @@ indexWithoutLocale:
   path: /
   controller: App\Controller\Home::index
 
+feeds:
+  path: /feeds/{feedName}
+  controller: App\Controller\Feeds::feeds
+
 home:
   path: /{_locale}
   controller: App\Controller\Home::home
