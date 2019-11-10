@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Entity;
+namespace App\Entity\Country;
 
 use App\EntityTraits\NameTrait;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * @ORM\Entity(repositoryClass="App\Repository\PlaceRepository")
+ * @ORM\Entity
  * @ORM\Table(name="countries")
  */
 class Country
@@ -41,6 +41,4 @@ class Country
     {
         return $this->geojson;
     }
-
-
 }

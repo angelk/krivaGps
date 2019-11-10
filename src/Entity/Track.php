@@ -8,6 +8,7 @@ use App\Entity\Track\OptimizedPoint;
 use App\Entity\Track\Version;
 use App\Entity\User\User;
 use App\Entity\Video\Youtube;
+use App\EntityTraits\CountryTrait;
 use App\EntityTraits\NameTrait;
 use App\EntityTraits\SendByTrait;
 use DateTime;
@@ -21,6 +22,7 @@ class Track implements CreatedAtInterface
 {
     use NameTrait;
     use SendByTrait;
+    use CountryTrait;
 
     public const TYPE_CYCLING = 1;
     public const TYPE_HIKING = 2;
