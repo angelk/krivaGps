@@ -2,12 +2,12 @@
 
 use Phinx\Migration\AbstractMigration;
 
-class Countries extends AbstractMigration
+class Country extends AbstractMigration
 {
     public function up()
     {
         $this->query("
-            CREATE TABLE countries (
+            CREATE TABLE country (
 	            id VARCHAR(64) NOT NULL,
 	            geojson JSON NOT NULL,
                 name_en VARCHAR(64) NOT NULL,
@@ -17,17 +17,17 @@ class Countries extends AbstractMigration
         ");
 
         $this->query("
-            CREATE UNIQUE INDEX countries_name_en_uindex ON countries (name_en);
+            CREATE UNIQUE INDEX country_name_en_uindex ON country (name_en);
         ");
 
         $this->query("
-            CREATE UNIQUE INDEX countries_name_bg_uindex ON countries (name_bg);
+            CREATE UNIQUE INDEX country_name_bg_uindex ON country (name_bg);
         ");
     }
 
     public function down()
     {
-        $this->query("DROP TABLE countries");
+        $this->query("DROP TABLE country");
     }
 
 }

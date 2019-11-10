@@ -4,7 +4,7 @@
 use Phinx\Seed\AbstractSeed;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class CountriesSeeder extends AbstractSeed
+class CountrySeeder extends AbstractSeed
 {
     public function run()
     {
@@ -26,7 +26,7 @@ class CountriesSeeder extends AbstractSeed
         $countries = json_decode(file_get_contents("countries.json"), true);
         ksort($countries);
 
-        $table = $this->table('countries');
+        $table = $this->table('country');
 
         foreach ($countries as $code => $data) {
             $this->getOutput()->writeln("Processing: {$data['name_en']}", OutputInterface::VERBOSITY_NORMAL);
