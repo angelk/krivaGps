@@ -3,6 +3,15 @@
 {% block content %}
     <h1>{{ track.name(app.request.locale) }}</h1>
 
+    {% if track.country %}
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="#">{{ track.country.name(app.request.locale) }}</a></li>
+                {{ dump(track.country|app_country_bbox) }}
+            </ol>
+        </nav>
+    {% endif %}
+
     {% if canEdit %}
         <a href="{{ path('app_track_edit', {id: track.id}) }}" class="btn btn-info">{{ 'Edit'|trans }}</a>
         <a href="{{ path('gps-new-version', {id: track.id}) }}" class="btn btn-info">{{ 'Add new version'|trans }}</a>
@@ -30,10 +39,15 @@
 
         map.addControl(new MapControlFullScreen());
 
+        {#map.fitBounds([#}
+        {#    [{{ track.pointNorthEastLat }}, {{ track.pointNorthEastLng }}],#}
+        {#    [{{ track.pointSouthWestLat }}, {{ track.pointSouthWestLng }}],#}
+        {#]);#}
+
         map.fitBounds([
-            [{{ track.pointNorthEastLat }}, {{ track.pointNorthEastLng }}],
-            [{{ track.pointSouthWestLat }}, {{ track.pointSouthWestLng }}],
-        ]);
+            [{{ track.country.bbox[1] }}, {{ track.country.bbox[0] }}],
+            [{{ track.country.bbox[3] }}, {{ track.country.bbox[2] }}],
+        ] );
 
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'

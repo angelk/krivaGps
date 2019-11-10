@@ -7,7 +7,7 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Entity
- * @ORM\Table(name="countries")
+ * @ORM\Table(name="country")
  */
 class Country
 {
@@ -35,10 +35,15 @@ class Country
 
     /**
      * Get GeoJSON data
-     * @return string
+     * @return array
      */
-    public function getGeojson(): string
+    public function getGeojson(): array
     {
         return $this->geojson;
+    }
+
+    public function getBbox(): array
+    {
+        return $this->geojson['features'][0]['bbox'];
     }
 }
