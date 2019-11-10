@@ -8,7 +8,7 @@ class Country extends AbstractMigration
     {
         $this->query("
             CREATE TABLE country (
-	            id VARCHAR(64) NOT NULL,
+	            id VARCHAR(2) NOT NULL,
 	            geojson JSON NOT NULL,
                 name_en VARCHAR(64) NOT NULL,
 	            name_bg VARCHAR(64) NOT NULL,	             
