@@ -7,7 +7,6 @@
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb">
                 <li class="breadcrumb-item"><a href="#">{{ track.country.name(app.request.locale) }}</a></li>
-                {{ dump(track.country|app_country_bbox) }}
             </ol>
         </nav>
     {% endif %}

@@ -1,0 +1,39 @@
+{% extends "base.html.twig" %}
+
+{% block content %}
+    {{ dump(country) }}
+    {{ dump(tracks) }}
+    {{ dump(places) }}
+    <hr>
+    <div style="height: 50vh; min-height: 300px; width: 100%;" id="map"></div>
+
+    <hr>
+    <div class="container-fluid">
+        <div class="accordion" id="accordionCountry">
+            <div class="card">
+                <div class="card-header" id="headingTracks">
+                    <h2 class="mb-0">
+                        <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapseTracks" aria-expanded="true" aria-controls="collapseTracks">
+                            Tracks
+                            <span class="badge badge-primary badge-pill">{{ tracks|length }}</span>
+                        </button>
+                    </h2>
+                </div>
+
+                <div id="collapseTracks" class="collapse show" aria-labelledby="headingTracks" data-parent="#accordionCountry">
+                    <div class="card-body">
+                        <ul>
+                            {% for track in tracks %}
+                                <li>{{ track.name(app.request.locale) }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+{% endblock %}

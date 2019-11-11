@@ -8,7 +8,6 @@ use Twig\TwigFilter;
 
 class CountryFilter extends AbstractExtension
 {
-
     public function getFilters()
     {
         return [
@@ -18,7 +17,6 @@ class CountryFilter extends AbstractExtension
 
     public function bbox(Country $country)
     {
-
         $geojson = $country->getGeojson();
         $bbox = $geojson['features'][0]['bbox'];
         return [

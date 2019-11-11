@@ -114,3 +114,7 @@ place_image_thumbnail:
     year: '\d+'
     maxWidth: '\d+'
     maxHeight: '\d+'
+
+app_country_view:
+  path: /{_locale}/country/view/{id}
+  controller: App\Controller\Country::view
