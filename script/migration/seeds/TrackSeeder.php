@@ -99,7 +99,8 @@ class TrackSeeder extends AbstractSeed
                 $versionData = [
                     'id' => $versionId,
                     'track_id' => $trackId,
-                    'name' => "Version",
+                    'name_en' => null,
+                    'name_bg' => null,
                     'positive_elevation' => 0,
                     'negative_elevation' => 0,
                     'file_id' => null,
