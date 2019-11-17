@@ -5,6 +5,7 @@ namespace App\Entity\Track;
 use App\Entity\File\TrackFile;
 use App\Entity\Track;
 use App\Entity\User\User;
+use App\EntityTraits\NameTrait;
 use App\EntityTraits\SendByTrait;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
@@ -15,6 +16,7 @@ use Doctrine\ORM\Mapping as ORM;
 class Version
 {
     use SendByTrait;
+    use NameTrait;
 
     /**
      * @ORM\Id
@@ -22,11 +24,6 @@ class Version
      * @ORM\Column(name="id", type="guid")
      */
     private $id;
-
-    /**
-     * @ORM\Column(type="string", nullable=true)
-     */
-    private $name;
 
     /**
      * @ORM\OneToOne(targetEntity="App\Entity\File\TrackFile", cascade={"persist", "remove"}, orphanRemoval=true)
