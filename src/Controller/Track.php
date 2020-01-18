@@ -4,10 +4,12 @@ namespace App\Controller;
 
 use App\Entity\File\TrackFile;
 use App\Entity\Track\Slug;
+use App\Entity\Track\TrackTranslation;
 use App\Entity\Track\VersionRating;
 use App\Entity\Track\Version;
 use App\Entity\Video\Youtube;
 use App\Form\Type\TrackVersion;
+use App\Repository\LanguageRepository;
 use App\Repository\Track\SlugRepository;
 use App\Repository\TrackRepository;
 use App\Track\ElevationDataGenerator;
@@ -29,19 +31,45 @@ use Tekstove\UrlVideoParser\Youtube\YoutubeParser;
 
 class Track extends AbstractController
 {
-    public function new(Request $request, LoggerInterface $logger, SlugRepository $slugRepo, Processor $processor)
+    private $languageRepository;
+
+    private $slugRepository;
+
+    public function __construct(LanguageRepository $languageRepository, SlugRepository $slugRepository)
+    {
+        $this->languageRepository = $languageRepository;
+        $this->slugRepository = $slugRepository;
+    }
+
+    public function new(Request $request, LoggerInterface $logger, Processor $processor)
     {
         $form = $this->createForm(\App\Form\Type\Track::class);
         $form->add('submit', SubmitType::class);
 
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
+
+            foreach ($form->get('name')->getData() as $name) {
+                var_dump($name);
+                continue;
+                $translation = new TrackTranslation();
+                $translation->setTrack();
+                $translation->setLanguage($name['language']);
+                $translation->setName($name['name']);
+                $translation->setDescription($name['description']);
+
+                $this->getDoctrine()->getManager()->persist($translation);
+                $this->getDoctrine()->getManager()->flush();
+            }
+            die();
+
             $formIsValid = true;
             $file = $form->get('file');
             $fileData = $file->getData();
             /* @var $fileData UploadedFile */
             $fileContent = file_get_contents($fileData->getRealPath());
             $track = new \App\Entity\Track($this->getUser());
+            $translation = new \App\Entity\Track\TrackTranslation();
             // we should have service for gpx processing
             $trackVersion = new Version($this->getUser());
             try {
@@ -56,16 +84,24 @@ class Track extends AbstractController
 
             $optimizedPoints = $processor->generateOptimizedPoints($trackVersion);
 
+            foreach ($form->get('name')->getData() as $name) {
+                $translation = new TrackTranslation();
+                $translation->setTrack();
+                $translation->setLanguage($name['language']);
+                $translation->setName($name['name']);
+                $translation->setDescription($name['description']);
+
+                $this->getDoctrine()->getManager()->persist($translation);
+                $this->getDoctrine()->getManager()->flush();
+            }
+            die();
+
             $trackVersion->setDifficulty($form->get('difficulty')->getData());
 
             $track->addOptimizedPoints($optimizedPoints);
             $track->addVersion($trackVersion);
             $track->setType($form->get('type')->getData());
-            $track->setNameEn($form->get('nameEn')->getData());
-            $track->setNameBg($form->get('nameBg')->getData());
             $track->setVisibility($form->get('visibility')->getData());
-            $track->setDescriptionBg($form->get('descriptionBg')->getData());
-            $track->setDescriptionEn($form->get('descriptionEn')->getData());
 
             $videoParser = new YoutubeParser();
             $youtubeVideos = [];
@@ -125,6 +161,8 @@ class Track extends AbstractController
             'gps/edit.html.twig',
             [
                 'form' => $form->createView(),
+                'languages' => $this->languageRepository->findAll(),
+
             ]
         );
     }
