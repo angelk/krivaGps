@@ -2,74 +2,42 @@
 
 namespace App\Security\Core;
 
+use App\Entity\User\User;
 use HWI\Bundle\OAuthBundle\OAuth\Response\UserResponseInterface;
-use HWI\Bundle\OAuthBundle\Security\Core\User\FOSUBUserProvider;
-use HWI\Bundle\OAuthBundle\Security\Core\Exception\AccountNotLinkedException;
+use HWI\Bundle\OAuthBundle\Security\Core\User\EntityUserProvider;
+use Symfony\Component\Security\Core\Exception\UsernameNotFoundException;
 
-class OAuthUserProvider extends FOSUBUserProvider
+class OAuthUserProvider extends EntityUserProvider
 {
     /**
      * {@inheritdoc}
      */
     public function loadUserByOAuthUserResponse(UserResponseInterface $response)
     {
-        /**
-         * @var string id in 3rd party system
-         * For facebook this is user id
-         */
-        $idFromThirdParty = $response->getUsername();
-
-        if (empty($idFromThirdParty)) {
-            throw new AccountNotLinkedException(sprintf("User '%s' not found.", $idFromThirdParty));
-        }
-
-        $field = $this->getProperty($response);
-        $user = $this->userManager->findUserBy([$field => $idFromThirdParty]);
-
-        if (!$user) {
-            // if user email is changed in 3rd party system, then change our data too
-            // the problem is when user have login from facebook and google and emails are different :(
-            if ($response->getEmail()) {
-                $user = $this->userManager->findUserByEmail($response->getEmail());
-            }
+        try {
+            return parent::loadUserByOAuthUserResponse($response);
+        } catch (UsernameNotFoundException $e) {
+            $email = $response->getEmail();
+            /**
+             * @var $user User
+             */
+            $user = $this->findUser(['email' => $email]);
 
             if ($user) {
-                $user->setFacebookId($idFromThirdParty);
-            }
-        }
-
-        if (!$user) {
-            $user = new \App\Entity\User\User();
-            $user->setFacebookId($idFromThirdParty);
-
-            $usernameFromThirdParty = $response->getNickname();
-            $username = $usernameFromThirdParty;
-            $usernameExists = true;
-            $counter = 0;
-            while ($usernameExists) {
-                if ($counter) {
-                    $username = $usernameFromThirdParty . $counter;
-                }
-
-                $existingUser = $this->userManager->findUserByUsername($username);
-                if (!$existingUser) {
-                    $usernameExists = false;
-                }
-
-                $counter++;
+                $user->setFacebookId($response->getUsername());
+            } else {
+                $user = new User();
+                $user->setNickname($response->getNickname());
+                $user->setEmail($response->getEmail());
+                $user->setFacebookId($response->getUsername());
+                $user->setRoles(['ROLE_USER']);
+                $user->setEnabled(true);
             }
 
-            $user->setUsername($username);
-            $user->setEmail($response->getEmail());
-            $user->setPassword(
-                sha1(
-                    base64_encode(random_bytes(30))
-                )
-            );
-            $user->setEnabled(true);
-            $this->userManager->updateUser($user);
-        }
+            $this->em->persist($user);
+            $this->em->flush();
 
-        return $user;
+            return $user;
+        }
     }
 }
